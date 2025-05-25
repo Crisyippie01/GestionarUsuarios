@@ -21,7 +21,7 @@ public class Usuario {
     @Id
     // Identificador
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     // Primer nombre, no nulo, largo de 25
     @Column(nullable = false, length= 25)

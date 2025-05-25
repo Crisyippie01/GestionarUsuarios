@@ -7,4 +7,5 @@ import com.gestion_usuarios.gestion_usuarios.model.Usuario;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
+
 }
