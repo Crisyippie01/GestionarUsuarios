@@ -43,6 +43,13 @@ public class UsuarioController {
         return usuarioService.actualizarUsuario(id, usuario);
     }
 
+    // Logearse con correo y contraseña
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestBody Usuario usuario){
+        Usuario usuarioAutenticado = usuarioService.login(usuario);
+        return ResponseEntity.ok(usuarioAutenticado);
+    }
+
     // Lista los usuarios existentes
     @GetMapping("/listar")
     public List<Usuario> listarUsuarios(){

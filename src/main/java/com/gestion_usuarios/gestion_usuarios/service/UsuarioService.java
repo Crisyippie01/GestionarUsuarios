@@ -56,7 +56,31 @@ public class UsuarioService {
         }
     }
 
+    // Metodo para logearse con correo y contraseña, una vez logeado se devuelve el usuario completo
+    public Usuario login(Usuario usuario) {
+        // Busca entre los usuarios existentes por correo y le entrega el objeto a usuarioExistente
+        Usuario usuarioExistente = usuarioRepository.findByCorreo(usuario.getCorreo());
+
+        // Si el usuarioExistente se queda en nulo (no se encontro usuario con ese correo)...
+        if (usuarioExistente == null) {
+            // ...devuelve mensaje y termina la ejecución
+            throw new RuntimeException("Correo no registrado.");
+        }
+
+        // Si la contraseña ingresada es diferente a la contraseña guardada en el usuarioExistente...
+        if (!usuario.getContrasena().equals(usuarioExistente.getContrasena())) {
+            // ...devuelve mensaje y termina la ejecución
+            throw new RuntimeException("Contraseña incorrecta.");
+        }
+        
+        // Si pasó los controles, devuelve el usuario existente indicando que has ingresado con exito
+        return usuarioExistente;
+    }
+
+    // Lista los usuarios existentes en el sistema
     public List<Usuario> obtenerUsuarios(){
+        
+        // Metodo de UsuarioRepository
         return usuarioRepository.findAll();
     }
 
