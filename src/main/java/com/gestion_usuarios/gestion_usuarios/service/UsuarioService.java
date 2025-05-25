@@ -1,11 +1,15 @@
 package com.gestion_usuarios.gestion_usuarios.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gestion_usuarios.gestion_usuarios.model.LoginRequest;
+import com.gestion_usuarios.gestion_usuarios.model.LoginResponse;
 import com.gestion_usuarios.gestion_usuarios.model.Usuario;
+import com.gestion_usuarios.gestion_usuarios.model.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -56,27 +60,6 @@ public class UsuarioService {
         }
     }
 
-    // Metodo para logearse con correo y contraseña, una vez logeado se devuelve el usuario completo
-    public Usuario login(Usuario usuario) {
-        // Busca entre los usuarios existentes por correo y le entrega el objeto a usuarioExistente
-        Usuario usuarioExistente = usuarioRepository.findByCorreo(usuario.getCorreo());
-
-        // Si el usuarioExistente se queda en nulo (no se encontro usuario con ese correo)...
-        if (usuarioExistente == null) {
-            // ...devuelve mensaje y termina la ejecución
-            throw new RuntimeException("Correo no registrado.");
-        }
-
-        // Si la contraseña ingresada es diferente a la contraseña guardada en el usuarioExistente...
-        if (!usuario.getContrasena().equals(usuarioExistente.getContrasena())) {
-            // ...devuelve mensaje y termina la ejecución
-            throw new RuntimeException("Contraseña incorrecta.");
-        }
-        
-        // Si pasó los controles, devuelve el usuario existente indicando que has ingresado con exito
-        return usuarioExistente;
-    }
-
     // Lista los usuarios existentes en el sistema
     public List<Usuario> obtenerUsuarios(){
         
@@ -84,4 +67,47 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    public UsuarioDTO obtenerUsuarioPorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return mapearAUsuarioDTO(usuario);
+    }
+
+    private UsuarioDTO mapearAUsuarioDTO(Usuario usuario) {
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setPnombre(usuario.getPnombre());
+        dto.setSnombre(usuario.getSnombre());
+        dto.setAppaterno(usuario.getAppaterno());
+        dto.setApmaterno(usuario.getApmaterno());
+        dto.setRol(usuario.getRol());
+        return dto;
+    }
+
+    // Metodo para logearse con correo y contraseña, una vez logeado se devuelve el usuario completo
+    public LoginResponse login(LoginRequest loginRequest){
+        
+        // Se busca el usuario en la base de datos por el correo proporcionado
+        Optional<Usuario> usuarioOpt = Optional.ofNullable(usuarioRepository.findByCorreo(loginRequest.getCorreo()));
+
+        // Si no se encuentra ningún usuario con ese correo...
+        if (usuarioOpt.isEmpty()){
+            // ...devuelve mensaje
+            throw new RuntimeException("Correo no registrado");
+        }
+
+        // Se obtiene el usuario encontrado
+        Usuario usuario = usuarioOpt.get();
+
+        // // Se compara la contraseña proporcionada con la almacenada, si no coinciden...
+        if (!usuario.getContrasena().equals(loginRequest.getContrasena())){
+            
+            // ...devuelve mensaje
+            throw new RuntimeException("Contraseña invalida");
+
+        }
+
+        // Si pasó los controles, devuelve el usuario existente indicando que has ingresado con exito
+        return new LoginResponse("Inicio de Sesión valido", usuario.getRol());
+    }
 }
