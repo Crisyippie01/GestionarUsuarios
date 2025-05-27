@@ -36,38 +36,45 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     } 
 
-    // Crea usuarios a partir de datos ingresados en PostMan como cliente
+    // Crea usuarios a partir de datos ingresados en PostMan por parte del CLIENTE
     @PostMapping("/cliente/crear-usuario")
     public Usuario crearUsuarioCliente(@RequestBody Usuario usuario){
         return usuarioService.crearUsuario(usuario);
     }
 
-    // Actualizar un usuario existente
-    @PutMapping("cliente/actualizar/{id}")
+    // Actualizar un usuario existente por parte del CLEINTE
+    @PutMapping("/cliente/actualizar/{id}")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         return usuarioService.actualizarUsuario(id, usuario);
     }
 
-    // Crea usuarios a partir de datos ingresados en PostMan como admin
+    // Elimina por ID
+    @DeleteMapping("/cliente/eliminar/{id}")
+    public ResponseEntity<Void> eliminarUsuarioCliente(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
+        return null;
+    }
+
+    // Crea usuarios a partir de datos ingresados en PostMan por parte de ADMIN
     @PostMapping("/admin/crear-usuario")
     public Usuario crearUsuarioAdmin(@RequestBody Usuario usuario){
         return usuarioService.crearUsuario(usuario);
     }
 
-    // Elimina por ID
+    // Elimina por ID por parte de ADMIN
     @DeleteMapping("/admin/eliminar/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarUsuarioAdmin(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
         return null;
     }
 
-    // Lista los usuarios existentes
+    // Lista los usuarios existentes por parte de ADMIN
     @GetMapping("/admin/listar-usuarios")
     public List<Usuario> listarUsuarios(){
         return usuarioService.obtenerUsuarios();
     }
     
-    // Obtiene un usuario por el ID
+    // Obtiene un usuario por el ID por parte de ADMIN
     @GetMapping("/admin/obtener-usuario/{id}")
     public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));

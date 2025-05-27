@@ -67,20 +67,31 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    // Metodo que devuelve el UsuarioDTO
     public UsuarioDTO obtenerUsuarioPorId(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Busco el Usuario por ID y si no lo encuentra...
+        Usuario usuario = usuarioRepository.findById(id)
+            // ...Retorna el mensaje
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // Llama el metodo que transforma el usuario a un usuarioDTO con los datos necesarios
         return mapearAUsuarioDTO(usuario);
     }
 
+    // Metodo para mapear un usuario DTO y luego pasarlo al obtenerUsuarioPorID
     private UsuarioDTO mapearAUsuarioDTO(Usuario usuario) {
+        
+        // Creas un objeto de la clase UsuarioDTO
         UsuarioDTO dto = new UsuarioDTO();
+
+        // Entregas los atributos que entrega el usuario
         dto.setPnombre(usuario.getPnombre());
         dto.setSnombre(usuario.getSnombre());
         dto.setAppaterno(usuario.getAppaterno());
         dto.setApmaterno(usuario.getApmaterno());
         dto.setRol(usuario.getRol());
+        // Retornas el UsuarioDTO
         return dto;
     }
 
