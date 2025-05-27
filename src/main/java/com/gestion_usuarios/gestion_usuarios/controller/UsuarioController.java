@@ -3,6 +3,7 @@ package com.gestion_usuarios.gestion_usuarios.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +31,14 @@ public class UsuarioController {
     @PostMapping("/logear")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         
-        // Llama al servicio para validar las credenciales del usuario
+        try {
         LoginResponse response = usuarioService.login(request);
-        // Si el login es exitoso, devuelve una respuesta HTTP 200 (OK) con el contenido
         return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage()); // devuelve el mensaje de error al cliente
+        }
     } 
 
     // Crea usuarios a partir de datos ingresados en PostMan por parte del CLIENTE
