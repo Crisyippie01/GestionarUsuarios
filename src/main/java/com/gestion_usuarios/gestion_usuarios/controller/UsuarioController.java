@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gestion_usuarios.gestion_usuarios.model.LoginRequest;
-import com.gestion_usuarios.gestion_usuarios.model.LoginResponse;
+import com.gestion_usuarios.gestion_usuarios.DTO.LoginRequest;
+import com.gestion_usuarios.gestion_usuarios.DTO.LoginResponse;
+import com.gestion_usuarios.gestion_usuarios.DTO.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.model.Usuario;
-import com.gestion_usuarios.gestion_usuarios.model.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.service.UsuarioService;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("api/v7/usuarios")
 public class UsuarioController {
     
     @Autowired
@@ -75,7 +75,7 @@ public class UsuarioController {
 
     // Lista los usuarios existentes por parte de ADMIN
     @GetMapping("/admin/listar-usuarios")
-    public List<Usuario> listarUsuarios(){
+    public List<UsuarioDTO> listarUsuarios(){
         return usuarioService.obtenerUsuarios();
     }
     

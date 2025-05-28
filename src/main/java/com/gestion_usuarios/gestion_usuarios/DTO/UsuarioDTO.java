@@ -1,4 +1,4 @@
-package com.gestion_usuarios.gestion_usuarios.model;
+package com.gestion_usuarios.gestion_usuarios.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +14,7 @@ public class UsuarioDTO {
     private String appaterno;
     private String apmaterno;
     private String rol;
+    private String region;
+    private String comuna;
 
 }

@@ -1,15 +1,16 @@
 package com.gestion_usuarios.gestion_usuarios.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gestion_usuarios.gestion_usuarios.model.LoginRequest;
-import com.gestion_usuarios.gestion_usuarios.model.LoginResponse;
+import com.gestion_usuarios.gestion_usuarios.DTO.LoginRequest;
+import com.gestion_usuarios.gestion_usuarios.DTO.LoginResponse;
+import com.gestion_usuarios.gestion_usuarios.DTO.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.model.Usuario;
-import com.gestion_usuarios.gestion_usuarios.model.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -61,10 +62,20 @@ public class UsuarioService {
     }
 
     // Lista los usuarios existentes en el sistema
-    public List<Usuario> obtenerUsuarios(){
+    public List<UsuarioDTO> obtenerUsuarios(){
         
+        // Crea dos listas, una que contiene todos los usuarios y otra vacia de la clase DTO
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<UsuarioDTO> usuariosDTO = new ArrayList<>();
+        
+        // Recorre todos los usuarios y agrega a la lista de la clase DTO todos los usuarios 
+        // Sin antes seleccionar solo lo que la clase DTO ocupa a través del metodo mapearAUsuarioDTO
+        for (Usuario usuario : usuarios) {
+            usuariosDTO.add(mapearAUsuarioDTO(usuario));
+        }
+
         // Metodo de UsuarioRepository
-        return usuarioRepository.findAll();
+        return usuariosDTO;
     }
 
     // Metodo que devuelve el UsuarioDTO
@@ -91,6 +102,9 @@ public class UsuarioService {
         dto.setAppaterno(usuario.getAppaterno());
         dto.setApmaterno(usuario.getApmaterno());
         dto.setRol(usuario.getRol());
+        dto.setRegion(usuario.getRegion());
+        dto.setComuna(usuario.getComuna());
+
         // Retornas el UsuarioDTO
         return dto;
     }

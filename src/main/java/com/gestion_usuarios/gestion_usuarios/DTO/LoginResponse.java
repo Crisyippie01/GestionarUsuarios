@@ -1,4 +1,4 @@
-package com.gestion_usuarios.gestion_usuarios.model;
+package com.gestion_usuarios.gestion_usuarios.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

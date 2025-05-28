@@ -59,7 +59,7 @@ public class Usuario {
     @Column(unique= true, nullable = false, length= 50)
     private String correo;
 
-    // Contraseña, se pasa en texto plano pero luego se encripta
+    // Contraseña, se pasa en texto plano
     @Column(nullable= false, length= 20)
     private String contrasena;
 
