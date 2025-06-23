@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +19,16 @@ import com.gestion_usuarios.gestion_usuarios.DTO.UsuarioDTO;
 import com.gestion_usuarios.gestion_usuarios.model.Usuario;
 import com.gestion_usuarios.gestion_usuarios.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
+@Tag(name = "Usuarios", description = "Operaciones para gestión de usuarios")
 @RestController
 @RequestMapping("api/v7/usuarios")
 public class UsuarioController {
@@ -27,61 +36,87 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Logearse
+    @Operation(summary = "Login de usuario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content)
+    })
     @PostMapping("/logear")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        
-        try {
-        LoginResponse response = usuarioService.login(request);
-        return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(e.getMessage()); // devuelve el mensaje de error al cliente
-        }
-    } 
+    public ResponseEntity<?> login(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Login", required = true,
+            content = @Content(schema = @Schema(implementation = LoginRequest.class)))
+        @org.springframework.web.bind.annotation.RequestBody LoginRequest request) {
 
-    // Crea usuarios a partir de datos ingresados en PostMan por parte del CLIENTE
+        try {
+            LoginResponse response = usuarioService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+
+    @Operation(summary = "Crear nuevo usuario (Cliente)")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuario creado correctamente", content = @Content(schema = @Schema(implementation = Usuario.class))),
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)})
     @PostMapping("/cliente/crear-usuario")
-    public Usuario crearUsuarioCliente(@RequestBody Usuario usuario){
+    public Usuario crearUsuarioCliente(
+        @org.springframework.web.bind.annotation.RequestBody Usuario usuario) {
         return usuarioService.crearUsuario(usuario);
     }
 
-    // Actualizar un usuario existente por parte del CLEINTE
+    @Operation(summary = "Actualizar usuario (Cliente)")
     @PutMapping("/cliente/actualizar/{id}")
-    public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public Usuario actualizarUsuario(
+        @Parameter(description = "ID del usuario a actualizar", required = true)
+        @PathVariable Long id,
+        @org.springframework.web.bind.annotation.RequestBody Usuario usuario) {
         return usuarioService.actualizarUsuario(id, usuario);
     }
 
-    // Elimina por ID
+    @Operation(summary = "Eliminar usuario (Cliente)")
     @DeleteMapping("/cliente/eliminar/{id}")
-    public ResponseEntity<Void> eliminarUsuarioCliente(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarUsuarioCliente(
+        @Parameter(description = "ID del usuario a eliminar", required = true)
+        @PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
-        return null;
+        return ResponseEntity.ok().build();
     }
 
-    // Crea usuarios a partir de datos ingresados en PostMan por parte de ADMIN
+    @Operation(summary = "Crear nuevo usuario (Admin)")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuario creado correctamente", content = @Content(schema = @Schema(implementation = Usuario.class))),
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)})
     @PostMapping("/admin/crear-usuario")
-    public Usuario crearUsuarioAdmin(@RequestBody Usuario usuario){
+    public Usuario crearUsuarioAdmin(
+        @org.springframework.web.bind.annotation.RequestBody Usuario usuario) {
         return usuarioService.crearUsuario(usuario);
     }
 
-    // Elimina por ID por parte de ADMIN
+    @Operation(summary = "Eliminar usuario (Admin)")
     @DeleteMapping("/admin/eliminar/{id}")
-    public ResponseEntity<Void> eliminarUsuarioAdmin(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarUsuarioAdmin(
+        @Parameter(description = "ID del usuario a eliminar", required = true)
+        @PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
-        return null;
+        return ResponseEntity.ok().build();
     }
 
-    // Lista los usuarios existentes por parte de ADMIN
+    @Operation(summary = "Listar todos los usuarios (Admin)")
     @GetMapping("/admin/listar-usuarios")
-    public List<UsuarioDTO> listarUsuarios(){
+    public List<UsuarioDTO> listarUsuarios() {
         return usuarioService.obtenerUsuarios();
     }
-    
-    // Obtiene un usuario por el ID por parte de ADMIN
+
+    @Operation(summary = "Obtener usuario por ID (Admin)")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuario encontrado", content = @Content(schema = @Schema(implementation = UsuarioDTO.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor (usuario no encontrado)", content = @Content)})
     @GetMapping("/admin/obtener-usuario/{id}")
-    public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> obtenerUsuario(
+        @Parameter(description = "ID del usuario a consultar", required = true)
+        @PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
     }
 
